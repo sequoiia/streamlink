@@ -137,6 +137,10 @@ class UsherService(object):
         params.update(extra_params)
 
         req = requests.Request("GET", url, params=params)
+
+        # Add default client-id for the Twitch web player.
+        req.headers.pop("client-id", "jzkbprff40iqj646a697cyrvl0zt2m6")
+
         # prepare_request is only available in requests 2.0+
         if hasattr(http, "prepare_request"):
             req = http.prepare_request(req)
@@ -168,9 +172,10 @@ class TwitchAPI(object):
             params["oauth_token"] = self.oauth_token
 
         url = "https://{0}.twitch.tv{1}.{2}".format(self.subdomain, path, format)
-
+        # Add default client-id for the Twitch web player.
+        headers = {'client-id': 'jzkbprff40iqj646a697cyrvl0zt2m6'}
         # The certificate used by Twitch cannot be verified on some OpenSSL versions.
-        res = http.get(url, params=params, verify=False)
+        res = http.get(url, params=params, verify=False, headers=headers)
 
         if format == "json":
             return http.json(res, schema=schema)
