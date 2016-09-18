@@ -26,6 +26,10 @@ QUALITY_WEIGHTS = {
     "mobile": 120,
 }
 
+# Twitch.tv requires a client-id header or OAuth token in each official API request.
+# The client ID below is the one for Twitch.tv's own web player.
+DEFAULT_CLIENT_ID = "jzkbprff40iqj646a697cyrvl0zt2m6"
+
 
 _url_re = re.compile(r"""
     http(s)?://
@@ -138,8 +142,7 @@ class UsherService(object):
 
         req = requests.Request("GET", url, params=params)
 
-        # Add default client-id for the Twitch web player.
-        req.headers.pop("client-id", "jzkbprff40iqj646a697cyrvl0zt2m6")
+        req.headers.pop("client-id", DEFAULT_CLIENT_ID)
 
         # prepare_request is only available in requests 2.0+
         if hasattr(http, "prepare_request"):
@@ -172,8 +175,8 @@ class TwitchAPI(object):
             params["oauth_token"] = self.oauth_token
 
         url = "https://{0}.twitch.tv{1}.{2}".format(self.subdomain, path, format)
-        # Add default client-id for the Twitch web player.
-        headers = {'client-id': 'jzkbprff40iqj646a697cyrvl0zt2m6'}
+        headers = {'client-id': DEFAULT_CLIENT_ID}
+
         # The certificate used by Twitch cannot be verified on some OpenSSL versions.
         res = http.get(url, params=params, verify=False, headers=headers)
 
